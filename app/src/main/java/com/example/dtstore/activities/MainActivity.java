@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,8 +22,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dtstore.R;
+import com.example.dtstore.adapters.LastestProductCardAdapter;
 import com.example.dtstore.adapters.LoaiSanPhamAdapter;
+import com.example.dtstore.models.LastestProductCardViewHolder;
 import com.example.dtstore.models.LoaiSanPham;
+import com.example.dtstore.models.Product;
 import com.example.dtstore.utilities.CheckNetworkConnection;
 import com.example.dtstore.utilities.Server;
 import com.google.android.material.navigation.NavigationView;
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     int id = 0;
     String tenLoaiSanPham = "";
     String hinhLoaiSanPham = "";
+    ArrayList<Product> productArrayList;
+    LastestProductCardAdapter lastestProductCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +63,57 @@ public class MainActivity extends AppCompatActivity {
             InitActionBar();
             InitViewFlipper();
             GetLoaiSanPhamData();
+            GetLastestProductData();
         }
         else{
             CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No Internet Connection");
             finish();
         }
+    }
+
+    private void GetLastestProductData() {
+        //Use Volley to get data from json format;
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.LastestProductUrl, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if(response != null){
+                    int id = 0;
+                    String productName = "";
+                    int productPrice = 0;
+                    String productImage = "";
+                    String productDescript = "";
+                    int idCategory = 0;
+                    //Iterate through all JsonObjects of JsonArray
+                    for(int i = 0; i<response.length();i++){
+                        try {
+
+                            //Get attribute from JsonObject
+                            JSONObject jsonObject = response.getJSONObject(i);
+                            id = jsonObject.getInt("id");
+                            productName = jsonObject.getString("tenSanPham");
+                            productImage = jsonObject.getString("hinhSanPham");
+                            productPrice = jsonObject.getInt("giaSanPham");
+                            productDescript = jsonObject.getString("moTaSanPham");
+                            idCategory = jsonObject.getInt("idLoaiSP");
+                            productArrayList.add(new Product(id, productName, productPrice, productImage, productDescript, idCategory));
+                            lastestProductCardAdapter.notifyDataSetChanged();
+                            //end
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Volley", "onErrorResponse: " + error);
+                CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), error.toString());
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
     }
 
     private void GetLoaiSanPhamData() {
@@ -83,8 +136,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                loaiSanPhamArrayList.add(3, new LoaiSanPham(0, "Liên hệ", "https://img.favpng.com/3/8/12/email-logo-icon-png-favpng-158EyDT9NQ1jfdXbwDdzD6ns6.jpg"));
-                loaiSanPhamArrayList.add(4, new LoaiSanPham(0, "Thông tin", "https://image.flaticon.com/icons/svg/684/684843.svg"));
+                loaiSanPhamArrayList.add(3, new LoaiSanPham(0, "Liên hệ",
+                        "https://img.favpng.com/3/8/12/email-logo-icon-png-favpng-158EyDT9NQ1jfdXbwDdzD6ns6.jpg"));
+                loaiSanPhamArrayList.add(4, new LoaiSanPham(0, "Thông tin",
+                        "https://image.flaticon.com/icons/svg/684/684843.svg"));
             }
         }, new Response.ErrorListener() {
             @Override
@@ -144,5 +199,11 @@ public class MainActivity extends AppCompatActivity {
         loaiSanPhamArrayList.add(0, new LoaiSanPham(0, "Trang Chủ", "https://image.flaticon.com/icons/svg/684/684875.svg"));
         loaiSanPhamAdapter = new LoaiSanPhamAdapter(loaiSanPhamArrayList, getApplicationContext());
         homeListView.setAdapter(loaiSanPhamAdapter);
+        productArrayList = new ArrayList<>();
+        lastestProductCardAdapter = new LastestProductCardAdapter(productArrayList);
+        homeRecyclerView.setHasFixedSize(true);
+        GridLayoutManager lastestProductLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        homeRecyclerView.setLayoutManager(lastestProductLayoutManager);
+        homeRecyclerView.setAdapter(lastestProductCardAdapter);
     }
 }

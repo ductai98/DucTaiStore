@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="textLoaiSanPham">#f20</color>
+    <color name="textProductName">#101010</color>
 </resources>
