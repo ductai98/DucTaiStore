@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dtstore.R;
 
-public class LastestProductCardViewHolder extends RecyclerView.ViewHolder {
+public class LatestProductCardViewHolder extends RecyclerView.ViewHolder {
 
     public ImageView productImage;
     public TextView productName;
     public TextView productPrice;
-    public LastestProductCardViewHolder(@NonNull View itemView) {
+    public LatestProductCardViewHolder(@NonNull View itemView) {
         super(itemView);
 
         // Mapping view from lastest_product_card.xmlcard.xml

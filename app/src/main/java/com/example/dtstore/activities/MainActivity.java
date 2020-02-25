@@ -7,11 +7,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ViewFlipper;
@@ -22,10 +24,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dtstore.R;
-import com.example.dtstore.adapters.LastestProductCardAdapter;
-import com.example.dtstore.adapters.LoaiSanPhamAdapter;
-import com.example.dtstore.models.LastestProductCardViewHolder;
-import com.example.dtstore.models.LoaiSanPham;
+import com.example.dtstore.RecyclerViewItemDecoration;
+import com.example.dtstore.adapters.LatestProductCardAdapter;
+import com.example.dtstore.adapters.CategoryAdapter;
+import com.example.dtstore.models.Category;
 import com.example.dtstore.models.Product;
 import com.example.dtstore.utilities.CheckNetworkConnection;
 import com.example.dtstore.utilities.Server;
@@ -46,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView homeRecyclerView;
     NavigationView homeNavigationView;
     ListView homeListView;
-    ArrayList<LoaiSanPham> loaiSanPhamArrayList;
-    LoaiSanPhamAdapter loaiSanPhamAdapter;
+    ArrayList<Category> categoryArrayList;
+    CategoryAdapter categoryAdapter;
     int id = 0;
     String tenLoaiSanPham = "";
     String hinhLoaiSanPham = "";
     ArrayList<Product> productArrayList;
-    LastestProductCardAdapter lastestProductCardAdapter;
+    LatestProductCardAdapter latestProductCardAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
         if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
             InitActionBar();
             InitViewFlipper();
+            InitRecyclerViewLatestProduct();
             GetLoaiSanPhamData();
-            GetLastestProductData();
+            GetLatestProductData();
+            OnClickMenuItem();
         }
         else{
             CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No Internet Connection");
@@ -71,7 +75,100 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void GetLastestProductData() {
+    //Create event item click on Navigation Menu
+    private void OnClickMenuItem() {
+        homeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Catch the position of menu item and launch the correspond Activity
+                switch (position){
+                    case 0:{
+                        homeDrawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    }
+                    //Phone Activity
+                    case 1:{
+                        if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
+                            //Launch Phone activity
+                            Intent intentPhone = new Intent(MainActivity.this, PhoneActivity.class);
+                            //Send CategoryID to Phone Activity
+                            intentPhone.putExtra("CategoryID", categoryArrayList.get(position).getId());
+                            startActivity(intentPhone);
+                        }
+                        else{
+                            CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No internet connection");
+                        }
+                        homeDrawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    }
+                    //Laptop Activity
+                    case 2:{
+                        if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
+                            //Launch activity
+                            Intent intentPhone = new Intent(MainActivity.this, LaptopActivity.class);
+                            //Send CategoryID to Laptop Activity
+                            intentPhone.putExtra("CategoryID", categoryArrayList.get(position).getId());
+                            startActivity(intentPhone);
+                        }
+                        else{
+                            CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No internet connection");
+                        }
+                        homeDrawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    }
+                    //Contact Activity
+                    case 3:{
+                        if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
+                            //Launch activity
+                            Intent intentPhone = new Intent(MainActivity.this, ContactActivity.class);
+                            startActivity(intentPhone);
+                        }
+                        else{
+                            CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No internet connection");
+                        }
+                        homeDrawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    }
+                    //Information Activity
+                    case 4:{
+                        if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
+                            //Launch activity
+                            Intent intentPhone = new Intent(MainActivity.this, InfomationActivity.class);
+                            intentPhone.putExtra("CategoryID", categoryArrayList.get(position).getId());
+                            startActivity(intentPhone);
+                        }
+                        else{
+                            CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No internet connection");
+                        }
+                        homeDrawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    private void InitRecyclerViewLatestProduct() {
+        //Init latest product list
+        productArrayList = new ArrayList<>();
+
+        //Init adapter for latest product
+        latestProductCardAdapter = new LatestProductCardAdapter(productArrayList);
+        homeRecyclerView.setHasFixedSize(true);
+
+        //Set up layout for recycler view
+        GridLayoutManager latestProductLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        homeRecyclerView.setLayoutManager(latestProductLayoutManager);
+
+        //Init items decoration of recycler view
+        RecyclerViewItemDecoration itemDecoration = new RecyclerViewItemDecoration(10, 10);
+        homeRecyclerView.addItemDecoration(itemDecoration);
+
+        //Attach adapter
+        homeRecyclerView.setAdapter(latestProductCardAdapter);
+    }
+
+    private void GetLatestProductData() {
         //Use Volley to get data from json format;
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.LastestProductUrl, new Response.Listener<JSONArray>() {
@@ -97,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                             productDescript = jsonObject.getString("moTaSanPham");
                             idCategory = jsonObject.getInt("idLoaiSP");
                             productArrayList.add(new Product(id, productName, productPrice, productImage, productDescript, idCategory));
-                            lastestProductCardAdapter.notifyDataSetChanged();
+                            latestProductCardAdapter.notifyDataSetChanged();
                             //end
 
                         } catch (JSONException e) {
@@ -117,28 +214,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void GetLoaiSanPhamData() {
+        //Use Volley to get data from json format;
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.pathLoaiSanPham, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 if(response != null){
+                    //Iterate through all JsonObjects of JsonArray
                     for(int i = 0; i < response.length(); i++){
                         try {
+                            //Get attribute from JsonObject
                             JSONObject objectLoaiSanPham = response.getJSONObject(i);
                             id = objectLoaiSanPham.getInt("id");
                             tenLoaiSanPham = objectLoaiSanPham.getString("tenloaisp");
                             hinhLoaiSanPham = objectLoaiSanPham.getString("hinhloaisp");
-                            loaiSanPhamArrayList.add(new LoaiSanPham(id, tenLoaiSanPham, hinhLoaiSanPham));
-                            loaiSanPhamAdapter.notifyDataSetChanged();
+                            categoryArrayList.add(new Category(id, tenLoaiSanPham, hinhLoaiSanPham));
+                            categoryAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 }
 
-                loaiSanPhamArrayList.add(3, new LoaiSanPham(0, "Liên hệ",
+                categoryArrayList.add(3, new Category(0, "Liên hệ",
                         "https://img.favpng.com/3/8/12/email-logo-icon-png-favpng-158EyDT9NQ1jfdXbwDdzD6ns6.jpg"));
-                loaiSanPhamArrayList.add(4, new LoaiSanPham(0, "Thông tin",
+                categoryArrayList.add(4, new Category(0, "Thông tin",
                         "https://image.flaticon.com/icons/svg/684/684843.svg"));
             }
         }, new Response.ErrorListener() {
@@ -195,15 +295,9 @@ public class MainActivity extends AppCompatActivity {
         homeRecyclerView = findViewById(R.id.home_recyclerView);
         homeNavigationView = findViewById(R.id.home_navigation);
         homeListView = findViewById(R.id.home_listview);
-        loaiSanPhamArrayList = new ArrayList<>();
-        loaiSanPhamArrayList.add(0, new LoaiSanPham(0, "Trang Chủ", "https://image.flaticon.com/icons/svg/684/684875.svg"));
-        loaiSanPhamAdapter = new LoaiSanPhamAdapter(loaiSanPhamArrayList, getApplicationContext());
-        homeListView.setAdapter(loaiSanPhamAdapter);
-        productArrayList = new ArrayList<>();
-        lastestProductCardAdapter = new LastestProductCardAdapter(productArrayList);
-        homeRecyclerView.setHasFixedSize(true);
-        GridLayoutManager lastestProductLayoutManager = new GridLayoutManager(getApplicationContext(),2);
-        homeRecyclerView.setLayoutManager(lastestProductLayoutManager);
-        homeRecyclerView.setAdapter(lastestProductCardAdapter);
+        categoryArrayList = new ArrayList<>();
+        categoryArrayList.add(0, new Category(0, "Trang Chủ", "https://image.flaticon.com/icons/svg/684/684875.svg"));
+        categoryAdapter = new CategoryAdapter(categoryArrayList, getApplicationContext());
+        homeListView.setAdapter(categoryAdapter);
     }
 }

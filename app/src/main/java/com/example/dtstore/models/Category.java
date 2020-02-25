@@ -1,11 +1,11 @@
 package com.example.dtstore.models;
 
-public class LoaiSanPham {
+public class Category {
     private int id;
     private String tenLoaiSanPham;
     private String hinhLoaiSanPham;
 
-    public LoaiSanPham(int id, String tenLoaiSanPham, String hinhLoaiSanPham) {
+    public Category(int id, String tenLoaiSanPham, String hinhLoaiSanPham) {
         this.id = id;
         this.tenLoaiSanPham = tenLoaiSanPham;
         this.hinhLoaiSanPham = hinhLoaiSanPham;

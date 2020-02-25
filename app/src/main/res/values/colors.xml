@@ -5,4 +5,8 @@
     <color name="colorAccent">#D81B60</color>
     <color name="textLoaiSanPham">#f20</color>
     <color name="textProductName">#101010</color>
+    <color name="actionBarTitleColor">#f9f6f5</color>
+    <color name="actionBarColor">#716562</color>
+    <color name="textProductNamePhone">#fc0a65ba</color>
+    <color name="textProductPricePhone">#ec0690</color>
 </resources>

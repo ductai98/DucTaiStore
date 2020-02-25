@@ -1,6 +1,5 @@
 package com.example.dtstore.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,30 +9,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dtstore.R;
 import com.example.dtstore.models.Product;
-import com.example.dtstore.models.LastestProductCardViewHolder;
+import com.example.dtstore.models.LatestProductCardViewHolder;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class LastestProductCardAdapter extends RecyclerView.Adapter<LastestProductCardViewHolder> {
+public class LatestProductCardAdapter extends RecyclerView.Adapter<LatestProductCardViewHolder> {
 
     ArrayList<Product> productArrayList;
 
-    public LastestProductCardAdapter(ArrayList<Product> productArrayList) {
+    public LatestProductCardAdapter(ArrayList<Product> productArrayList) {
         this.productArrayList = productArrayList;
     }
 
     @NonNull
     @Override
-    public LastestProductCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public LatestProductCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.lastest_product_card, null);
-        LastestProductCardViewHolder lastestProductCardViewHolder = new LastestProductCardViewHolder(view);
-        return lastestProductCardViewHolder;
+        LatestProductCardViewHolder latestProductCardViewHolder = new LatestProductCardViewHolder(view);
+        return latestProductCardViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LastestProductCardViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LatestProductCardViewHolder holder, int position) {
         // Binding product data to layout
         if(productArrayList != null && position < productArrayList.size()){
             Product product = productArrayList.get(position);
