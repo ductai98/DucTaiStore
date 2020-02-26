@@ -1,12 +1,21 @@
 package com.example.dtstore.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -39,20 +48,58 @@ public class PhoneActivity extends AppCompatActivity {
     ArrayList<Product> productArrayList;
     int categoryID = 0;
     int page = 1;
+    View footerView;
+    boolean isLoading = false;
+    MyHandler myHandler;
+    boolean isOutOfData = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone);
         MappingViewPhoneActivity();
+        InitHandler();
         InitListViewItem();
         InitActionBar();
         GetCategoryID();
-        if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
+        if (CheckNetworkConnection.haveNetworkConnection(getApplicationContext())) {
             GetProductsDataByCategoryID(page);
-        }else{
+            LoadMoreData();
+        } else {
             CheckNetworkConnection.ShowMessage_Short(this, "No internet connection");
         }
+    }
+
+    private void InitHandler() {
+        myHandler = new MyHandler();
+    }
+
+    private void LoadMoreData() {
+        phoneListview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0
+                        && isLoading == false && isOutOfData == false) {
+                    isLoading = true;
+                    LoadingDataThread loadingDataThread = new LoadingDataThread();
+                    loadingDataThread.start();
+                }
+            }
+        });
+
+        phoneListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(PhoneActivity.this, ProductDetailActivity.class);
+                intent.putExtra("ProductData", productArrayList.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     private void GetProductsDataByCategoryID(int pageNum) {
@@ -68,11 +115,12 @@ public class PhoneActivity extends AppCompatActivity {
                 String productImage = "";
                 String productDescript = "";
                 int categoryID = 0;
-                if (response != null) {
+                if (response != null && response.length() != 2) {
+                    phoneListview.removeFooterView(footerView);
                     try {
                         JSONArray jsonArray = new JSONArray(response);
                         //Iterate through all JsonObjects of JsonArray
-                        for(int i =0;i<jsonArray.length();i++){
+                        for (int i = 0; i < jsonArray.length(); i++) {
 
                             //Get attribute from JsonObject
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -91,7 +139,11 @@ public class PhoneActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-
+                else {
+                    isOutOfData = true;
+                    phoneListview.removeFooterView(footerView);
+                    Toast.makeText(PhoneActivity.this, "Out of data", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -135,5 +187,41 @@ public class PhoneActivity extends AppCompatActivity {
     private void MappingViewPhoneActivity() {
         phoneToolbar = findViewById(R.id.phone_toolbar);
         phoneListview = findViewById(R.id.phone_listview);
+        footerView = LayoutInflater.from(this).inflate(R.layout.progress_bar, null);
+    }
+
+    public class MyHandler extends Handler {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            switch (msg.what){
+                case 0:{ // Add footer to layout
+                    phoneListview.addFooterView(footerView);
+                    break;
+                }
+                case 1:{ // Add data to list view
+                    page++;
+                    GetProductsDataByCategoryID(page);
+                    isLoading = false;
+                    break;
+                }
+            }
+            super.handleMessage(msg);
+        }
+    }
+
+    public class LoadingDataThread extends Thread{
+        @Override
+        public void run() {
+            Message message = myHandler.obtainMessage(0);
+            myHandler.sendMessage(message);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            message = myHandler.obtainMessage(1);
+            myHandler.sendMessage(message);
+            super.run();
+        }
     }
 }
