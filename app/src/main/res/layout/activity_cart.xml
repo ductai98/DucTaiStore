@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CartActivity"
+    android:orientation="vertical"
+    android:weightSum="10">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/cart_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Cart"
+        app:titleTextColor="@color/actionBarTitleColor"
+        android:background="@color/actionBarColor"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/cart_textviewInform"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="30dp"
+                android:text="Giỏ hàng đang trống"/>
+            
+            <ListView
+                android:id="@+id/cart_listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Tổng tiền:"
+            android:textSize="20sp"
+            android:textColor="@color/textLoaiSanPham"/>
+
+        <TextView
+            android:id="@+id/cart_totalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="1298000"
+            android:textSize="20sp"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/textLoaiSanPham"/>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cart_checkout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Thanh toán"
+        android:layout_marginHorizontal="50dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cart_continue"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Tiếp tục mua hàng"
+        android:layout_marginHorizontal="50dp"/>
+
+</LinearLayout>

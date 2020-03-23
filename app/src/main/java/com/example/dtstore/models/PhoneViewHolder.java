@@ -5,7 +5,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-public class ProductViewHolder {
+public class PhoneViewHolder {
     public TextView phone_text_product_name;
     public TextView phone_text_product_price;
     public TextView phone_text_product_descript;

@@ -27,7 +27,7 @@ public class LatestProductCardAdapter extends RecyclerView.Adapter<LatestProduct
     @Override
     public LatestProductCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.lastest_product_card, null);
-        LatestProductCardViewHolder latestProductCardViewHolder = new LatestProductCardViewHolder(view);
+        LatestProductCardViewHolder latestProductCardViewHolder = new LatestProductCardViewHolder(view, productArrayList);
         return latestProductCardViewHolder;
     }
 

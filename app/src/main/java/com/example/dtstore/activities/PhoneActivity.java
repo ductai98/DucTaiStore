@@ -11,6 +11,8 @@ import android.os.Message;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -46,7 +48,7 @@ public class PhoneActivity extends AppCompatActivity {
     ListView phoneListview;
     PhoneListViewAdapter phoneAdapter;
     ArrayList<Product> productArrayList;
-    int categoryID = 0;
+    int categoryID = 1;
     int page = 1;
     View footerView;
     boolean isLoading = false;
@@ -68,6 +70,23 @@ public class PhoneActivity extends AppCompatActivity {
         } else {
             CheckNetworkConnection.ShowMessage_Short(this, "No internet connection");
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_cart:
+                Intent cartIntent = new Intent(PhoneActivity.this, CartActivity.class);
+                startActivity(cartIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void InitHandler() {
@@ -129,7 +148,7 @@ public class PhoneActivity extends AppCompatActivity {
                             productImage = jsonObject.getString("productImage");
                             productPrice = jsonObject.getInt("productPrice");
                             productDescript = jsonObject.getString("productDescript");
-                            categoryID = jsonObject.getInt("categoryID");
+                            categoryID = jsonObject.getInt("idCategory");
 
                             //Push data to the product array list
                             productArrayList.add(new Product(id, productName, productPrice, productImage, productDescript, categoryID));
@@ -148,7 +167,7 @@ public class PhoneActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Toast.makeText(PhoneActivity.this, error.getMessage(), Toast.LENGTH_SHORT);
             }
         }) {
             @Override
@@ -158,7 +177,6 @@ public class PhoneActivity extends AppCompatActivity {
                 return param;
             }
         };
-
         requestQueue.add(stringRequest);
     }
 

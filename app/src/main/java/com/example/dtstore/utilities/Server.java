@@ -4,9 +4,9 @@ import java.net.UnknownHostException;
 
 public class Server {
     public static String localhost = "192.168.1.62";
-    public static String pathLoaiSanPham = "http://" + localhost + "/php/getloaisanpham.php";
-    public static String LastestProductUrl = "http://" + localhost + "/php/get_lastest_product.php";
-    public static String ProductURL = "http://" + localhost + "/php/getProduct.php?page=";
+    public static String CategoryUrl = "http://" + localhost + "/android/getCategories.php";
+    public static String LatestProductUrl = "http://" + localhost + "/android/getLatestProducts.php";
+    public static String ProductURL = "http://" + localhost + "/android/getProducts.php?page=";
 
     public static String getIPv4Address(){
         String ipv4 = "";

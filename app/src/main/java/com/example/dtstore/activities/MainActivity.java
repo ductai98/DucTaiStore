@@ -1,5 +1,6 @@
 package com.example.dtstore.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,6 +30,7 @@ import com.example.dtstore.R;
 import com.example.dtstore.RecyclerViewItemDecoration;
 import com.example.dtstore.adapters.LatestProductCardAdapter;
 import com.example.dtstore.adapters.CategoryAdapter;
+import com.example.dtstore.models.Cart;
 import com.example.dtstore.models.Category;
 import com.example.dtstore.models.Product;
 import com.example.dtstore.utilities.CheckNetworkConnection;
@@ -51,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Category> categoryArrayList;
     CategoryAdapter categoryAdapter;
     int id = 0;
-    String tenLoaiSanPham = "";
-    String hinhLoaiSanPham = "";
+    String categoryName = "";
+    String categoryImage = "";
     ArrayList<Product> productArrayList;
     LatestProductCardAdapter latestProductCardAdapter;
+    public static ArrayList<Cart> cartArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             InitActionBar();
             InitViewFlipper();
             InitRecyclerViewLatestProduct();
-            GetLoaiSanPhamData();
+            GetCategoryData();
             GetLatestProductData();
             OnClickMenuItem();
         }
@@ -73,6 +78,23 @@ public class MainActivity extends AppCompatActivity {
             CheckNetworkConnection.ShowMessage_Short(getApplicationContext(), "No Internet Connection");
             finish();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_cart:
+                Intent cartIntent = new Intent(MainActivity.this, CartActivity.class);
+                startActivity(cartIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     //Create event item click on Navigation Menu
@@ -171,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private void GetLatestProductData() {
         //Use Volley to get data from json format;
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.LastestProductUrl, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.LatestProductUrl, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 if(response != null){
@@ -188,11 +210,11 @@ public class MainActivity extends AppCompatActivity {
                             //Get attribute from JsonObject
                             JSONObject jsonObject = response.getJSONObject(i);
                             id = jsonObject.getInt("id");
-                            productName = jsonObject.getString("tenSanPham");
-                            productImage = jsonObject.getString("hinhSanPham");
-                            productPrice = jsonObject.getInt("giaSanPham");
-                            productDescript = jsonObject.getString("moTaSanPham");
-                            idCategory = jsonObject.getInt("idLoaiSP");
+                            productName = jsonObject.getString("productName");
+                            productImage = jsonObject.getString("productImage");
+                            productPrice = jsonObject.getInt("productPrice");
+                            productDescript = jsonObject.getString("productDescript");
+                            idCategory = jsonObject.getInt("idCategory");
                             productArrayList.add(new Product(id, productName, productPrice, productImage, productDescript, idCategory));
                             latestProductCardAdapter.notifyDataSetChanged();
                             //end
@@ -213,10 +235,10 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(jsonArrayRequest);
     }
 
-    private void GetLoaiSanPhamData() {
+    private void GetCategoryData() {
         //Use Volley to get data from json format;
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.pathLoaiSanPham, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Server.CategoryUrl, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 if(response != null){
@@ -224,11 +246,11 @@ public class MainActivity extends AppCompatActivity {
                     for(int i = 0; i < response.length(); i++){
                         try {
                             //Get attribute from JsonObject
-                            JSONObject objectLoaiSanPham = response.getJSONObject(i);
-                            id = objectLoaiSanPham.getInt("id");
-                            tenLoaiSanPham = objectLoaiSanPham.getString("tenloaisp");
-                            hinhLoaiSanPham = objectLoaiSanPham.getString("hinhloaisp");
-                            categoryArrayList.add(new Category(id, tenLoaiSanPham, hinhLoaiSanPham));
+                            JSONObject categoryObject = response.getJSONObject(i);
+                            id = categoryObject.getInt("id");
+                            categoryName = categoryObject.getString("categoryName");
+                            categoryImage = categoryObject.getString("categoryImage");
+                            categoryArrayList.add(new Category(id, categoryName, categoryImage));
                             categoryAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -237,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 categoryArrayList.add(3, new Category(0, "Liên hệ",
-                        "https://img.favpng.com/3/8/12/email-logo-icon-png-favpng-158EyDT9NQ1jfdXbwDdzD6ns6.jpg"));
+                        "https://download.seaicons.com/icons/iconsmind/outline/512/Mail-Read-icon.png"));
                 categoryArrayList.add(4, new Category(0, "Thông tin",
-                        "https://image.flaticon.com/icons/svg/684/684843.svg"));
+                        "https://png.pngtree.com/svg/20151015/7d4d97ad8b.png"));
             }
         }, new Response.ErrorListener() {
             @Override
@@ -296,8 +318,13 @@ public class MainActivity extends AppCompatActivity {
         homeNavigationView = findViewById(R.id.home_navigation);
         homeListView = findViewById(R.id.home_listview);
         categoryArrayList = new ArrayList<>();
-        categoryArrayList.add(0, new Category(0, "Trang Chủ", "https://image.flaticon.com/icons/svg/684/684875.svg"));
+        categoryArrayList.add(0, new Category(0, "Trang Chủ", "https://download.seaicons.com/icons/icons8/windows-8/512/Very-Basic-Home-icon.png"));
         categoryAdapter = new CategoryAdapter(categoryArrayList, getApplicationContext());
         homeListView.setAdapter(categoryAdapter);
+
+        if(cartArrayList != null){
+        }else{
+            cartArrayList = new ArrayList<>();
+        }
     }
 }
