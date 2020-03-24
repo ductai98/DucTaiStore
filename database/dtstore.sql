@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 20, 2020 lúc 02:38 PM
+-- Thời gian đã tạo: Th3 24, 2020 lúc 04:22 PM
 -- Phiên bản máy phục vụ: 10.4.11-MariaDB
 -- Phiên bản PHP: 7.4.2
 
@@ -91,6 +91,28 @@ INSERT INTO `product` (`id`, `productName`, `productPrice`, `productImage`, `pro
 (27, 'Acer Aspire A315 34 P3LC N5000', 7790000, 'https://cdn.tgdd.vn/Products/Images/44/211632/acer-aspire-a315-34-p3lc-n5000-4gb-256gb-win10-nx-18-600x600.jpg', 'Laptop Acer Aspire A315 34 P3LC N5000 (NX.HE3SV.004) là sản phẩm laptop học tập - văn phòng tầm trung, có cấu hình vừa phải và mức giá phải chăng. Bên cạnh đó laptop còn sở hữu màn hình 15.6 inch cho không gian hiển thị rộng, làm việc và giải trí tuyệt vời.', 2),
 (28, 'Lenovo Ideapad S145 15IWL i3 8145U', 11290000, 'https://cdn.tgdd.vn/Products/Images/44/207798/lenovo-ideapad-s145-15iwl-i3-8145u-4gb-256gb-mx110-18-600x600.jpg', 'Lenovo Ideapad S145 15IWL i3 (81MV00SXVN) là mẫu laptop văn phòng nhỏ gọn, thiết kế đẹp với viền màn hình siêu mỏng. Máy đảm nhận tốt hầu hết các tác vụ văn phòng, thiết kế đồ họa nhờ cấu hình khá và card đồ họa rời MX110.', 2);
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `receipt`
+--
+
+CREATE TABLE `receipt` (
+  `id` int(11) NOT NULL,
+  `customerName` varchar(2000) NOT NULL,
+  `customerPhone` int(11) NOT NULL,
+  `customerEmail` varchar(2000) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Đang đổ dữ liệu cho bảng `receipt`
+--
+
+INSERT INTO `receipt` (`id`, `customerName`, `customerPhone`, `customerEmail`) VALUES
+(1, 'ductai', 12345679, 'ductai@gmail.com'),
+(6, '123', 123, 'email@gmail.com'),
+(7, 'tai', 123456789, 'email@gmail.com');
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -108,6 +130,12 @@ ALTER TABLE `product`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `receipt`
+--
+ALTER TABLE `receipt`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -122,6 +150,12 @@ ALTER TABLE `category`
 --
 ALTER TABLE `product`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT cho bảng `receipt`
+--
+ALTER TABLE `receipt`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

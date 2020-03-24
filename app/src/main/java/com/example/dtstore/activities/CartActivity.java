@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.dtstore.R;
 import com.example.dtstore.adapters.CartListViewAdapter;
+import com.example.dtstore.models.Cart;
 
 import java.text.DecimalFormat;
 
@@ -29,12 +31,43 @@ public class CartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-         MappingView();
-         SetUpListViewAdapter();
-         SetUpToolBar();
-         CheckCartData();
-         GetCartDataFromMainActivity();
-         HandlerItemLongClick();
+        MappingView();
+        SetUpListViewAdapter();
+        SetUpToolBar();
+        CheckCartData();
+        GetCartDataFromMainActivity();
+        HandlerItemLongClick(); //Delete product in cart
+        OnClickButtonCheckOutAndContinue();
+    }
+
+    private void OnClickButtonCheckOutAndContinue() {
+        cartContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainIntent = new Intent(CartActivity.this, MainActivity.class);
+                startActivity(mainIntent);
+            }
+        });
+
+        cartCheckOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(MainActivity.cartArrayList.size() > 0){
+                    Intent intent = new Intent(CartActivity.this, CustomerActivity.class);
+                    startActivity(intent);
+                }else{
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(CartActivity.this);
+                    alert.setTitle("Thông báo");
+                    alert.setMessage("Giỏ hàng đang trống");
+                    alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alert.show();
+                }
+            }
+        });
     }
 
     private void HandlerItemLongClick() {

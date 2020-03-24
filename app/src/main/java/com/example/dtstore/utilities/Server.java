@@ -7,6 +7,7 @@ public class Server {
     public static String CategoryUrl = "http://" + localhost + "/android/getCategories.php";
     public static String LatestProductUrl = "http://" + localhost + "/android/getLatestProducts.php";
     public static String ProductURL = "http://" + localhost + "/android/getProducts.php?page=";
+    public static String ReceiptURL = "http://" + localhost + "/android/getCustomerInfo.php";
 
     public static String getIPv4Address(){
         String ipv4 = "";

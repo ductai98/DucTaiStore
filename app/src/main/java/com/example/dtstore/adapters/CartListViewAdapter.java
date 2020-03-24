@@ -65,9 +65,9 @@ public class CartListViewAdapter extends BaseAdapter {
         cartViewHolder.txtProductPrice.setText(decimalFormat.format(cart.getTotalPrice()) + "đ");
         Picasso.get().load(cart.getProductImage()).placeholder(R.drawable.placeholder).error(R.drawable.error).into(cartViewHolder.imgProductImage);
         cartViewHolder.txtQuantity.setText(String.valueOf(cart.getCount()));
-        final int quantity = Integer.parseInt(cartViewHolder.txtQuantity.getText().toString());
+        int quantity = Integer.parseInt(cartViewHolder.txtQuantity.getText().toString());
 
-        //Don't allowed customer buy more than 10 each product
+        //Don't allowed customer buy more than 10 each product and less than 1 each product
         checkQuantity(quantity, cartViewHolder);
 
         //Handle button plus quantity on click event
@@ -82,6 +82,9 @@ public class CartListViewAdapter extends BaseAdapter {
 
                 //Set new quantity to cartArrayList
                 MainActivity.cartArrayList.get(position).setCount(newQuantity);
+                if(currentQuantity == 0){
+                    currentQuantity = 1;
+                }
                 long newPrice = (currentPrice * newQuantity) / currentQuantity;
                 MainActivity.cartArrayList.get(position).setTotalPrice(newPrice);
 
@@ -103,7 +106,12 @@ public class CartListViewAdapter extends BaseAdapter {
 
                 //Set new quantity to cartArrayList
                 MainActivity.cartArrayList.get(position).setCount(newQuantity);
-                long newPrice = (currentPrice * newQuantity) / currentQuantity;
+                long newPrice = 1;
+                if(currentQuantity == 0){
+                    newPrice = 0;
+                }else{
+                    newPrice = (currentPrice * newQuantity) / currentQuantity;
+                }
                 MainActivity.cartArrayList.get(position).setTotalPrice(newPrice);
 
                 DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
@@ -118,15 +126,15 @@ public class CartListViewAdapter extends BaseAdapter {
 
     //Don't allowed customer buy more than 10 each product
     private void checkQuantity(int quantity, CartViewHolder viewHolder){
-        if(quantity <1){
-            quantity = 1;
+        if(quantity == 1){
+            viewHolder.btnMinus.setVisibility(View.INVISIBLE);
+        }else{
+            viewHolder.btnMinus.setVisibility(View.VISIBLE);
         }
         if (quantity >= 10) {
-            viewHolder.btnPlus.setAlpha(0.5f);
-            viewHolder.btnPlus.setClickable(false);
-        } else if (quantity < 10) {
-            viewHolder.btnPlus.setAlpha(1f);
-            viewHolder.btnPlus.setClickable(true);
+            viewHolder.btnPlus.setVisibility(View.INVISIBLE);
+        } else{
+            viewHolder.btnPlus.setVisibility(View.VISIBLE);
         }
     }
 
