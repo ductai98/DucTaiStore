@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     case 4:{
                         if(CheckNetworkConnection.haveNetworkConnection(getApplicationContext())){
                             //Launch activity
-                            Intent intentPhone = new Intent(MainActivity.this, InfomationActivity.class);
+                            Intent intentPhone = new Intent(MainActivity.this, InformationActivity.class);
                             intentPhone.putExtra("CategoryID", categoryArrayList.get(position).getId());
                             startActivity(intentPhone);
                         }

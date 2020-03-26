@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,10 @@ import com.example.dtstore.utilities.CheckNetworkConnection;
 import com.example.dtstore.utilities.Server;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,20 +71,68 @@ public class CustomerActivity extends AppCompatActivity {
                         RequestQueue requestQueue = Volley.newRequestQueue(CustomerActivity.this);
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, Server.ReceiptURL, new Response.Listener<String>() {
                             @Override
-                            public void onResponse(String response) {
-                                Log.d("ReceitID: ", response);
-                                //Show Alert Confirm
-                                ShowAlert(CustomerActivity.this, "Đã gửi thông báo mua", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        finish();
-                                    }
-                                });
+                            public void onResponse(final String receiptID) {
+                                //Push json data to webservice
+                                if(Integer.parseInt(receiptID) > 0){
+                                    RequestQueue queue = Volley.newRequestQueue(CustomerActivity.this);
+                                    StringRequest request = new StringRequest(Request.Method.POST, Server.ReceiptDetailURL, new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            if(response.equals("1")){
+                                                MainActivity.cartArrayList.clear();
+                                                //Show Alert Confirm
+                                                ShowAlert(CustomerActivity.this, "Đã gửi thông báo mua", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        //Change to Main activity
+                                                        Intent mainIntent = new Intent(CustomerActivity.this, MainActivity.class);
+                                                        startActivity(mainIntent);
+                                                        finish();
+                                                    }
+                                                });
+                                            }else{
+                                                String error = "Đã xảy ra lỗi, chưa gửi được thông báo thanh toán";
+                                                CheckNetworkConnection.ShowMessage_Short(CustomerActivity.this, error);
+                                                Log.d("receiptDetail: ", response);
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                        }
+                                    }){
+                                        @Override
+                                        protected Map<String, String> getParams() throws AuthFailureError {
+                                            JSONArray jsonArray = new JSONArray();
+                                            for(int i = 0; i < MainActivity.cartArrayList.size(); i++){
+                                                //Create a jsonObject of a product in cart
+                                                JSONObject jsonObject = new JSONObject();
+                                                try {
+                                                    jsonObject.put("receiptID", receiptID);
+                                                    jsonObject.put("productID", MainActivity.cartArrayList.get(i).getId());
+                                                    jsonObject.put("productName", MainActivity.cartArrayList.get(i).getProductName());
+                                                    jsonObject.put("productPrice", MainActivity.cartArrayList.get(i).getTotalPrice());
+                                                    jsonObject.put("productQuantity", MainActivity.cartArrayList.get(i).getCount());
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                //Push json object to json array
+                                                jsonArray.put(jsonObject);
+                                            }
+                                            HashMap<String, String> params = new HashMap<>();
+                                            params.put("json", jsonArray.toString());
+                                            return params;
+                                        }
+                                    };
+                                    queue.add(request);
+                                }
+
                             }
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
+                                CheckNetworkConnection.ShowMessage_Short(CustomerActivity.this, "Error: " + error.getMessage());
                             }
                         }) {
                             //Add params to use POST method
@@ -106,6 +159,7 @@ public class CustomerActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(pContext);
         alert.setMessage(pMessage);
         alert.setPositiveButton("Xác nhận", onOKListener);
+        alert.setCancelable(false);
         alert.show();
     }
 
