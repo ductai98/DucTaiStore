@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 24, 2020 lúc 04:22 PM
+-- Thời gian đã tạo: Th3 26, 2020 lúc 05:47 AM
 -- Phiên bản máy phục vụ: 10.4.11-MariaDB
 -- Phiên bản PHP: 7.4.2
 
@@ -111,7 +111,43 @@ CREATE TABLE `receipt` (
 INSERT INTO `receipt` (`id`, `customerName`, `customerPhone`, `customerEmail`) VALUES
 (1, 'ductai', 12345679, 'ductai@gmail.com'),
 (6, '123', 123, 'email@gmail.com'),
-(7, 'tai', 123456789, 'email@gmail.com');
+(7, 'tai', 123456789, 'email@gmail.com'),
+(8, 'tai', 1234567891, 'email@gmail.com'),
+(9, 'tai', 1234567891, 'email@gmail.com'),
+(10, 'tai', 123456789, 'email@gmail.com'),
+(11, 'tai', 123456789, 'email@gmail.com'),
+(12, '123', 123, '123'),
+(13, '123', 123, '123'),
+(14, '123', 123, '123'),
+(15, '123', 123, '123'),
+(16, '123', 123, '123');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `receiptdetail`
+--
+
+CREATE TABLE `receiptdetail` (
+  `id` int(11) NOT NULL,
+  `receiptID` int(11) NOT NULL,
+  `productID` int(11) NOT NULL,
+  `productName` varchar(2000) NOT NULL,
+  `productPrice` int(11) NOT NULL,
+  `productQuantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Đang đổ dữ liệu cho bảng `receiptdetail`
+--
+
+INSERT INTO `receiptdetail` (`id`, `receiptID`, `productID`, `productName`, `productPrice`, `productQuantity`) VALUES
+(1, 9, 26, 'HP 15s du0072TX i3 7020U', 36870000, 3),
+(2, 9, 25, 'Asus VivoBook A412FA i5 10210U', 16990000, 1),
+(3, 10, 27, 'Acer Aspire A315 34 P3LC N5000', 7790000, 1),
+(4, 12, 28, 'Lenovo Ideapad S145 15IWL i3 8145U', 11290000, 1),
+(5, 13, 26, 'HP 15s du0072TX i3 7020U', 12290000, 1),
+(6, 16, 28, 'Lenovo Ideapad S145 15IWL i3 8145U', 11290000, 1);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -136,6 +172,12 @@ ALTER TABLE `receipt`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `receiptdetail`
+--
+ALTER TABLE `receiptdetail`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -155,7 +197,13 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT cho bảng `receipt`
 --
 ALTER TABLE `receipt`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT cho bảng `receiptdetail`
+--
+ALTER TABLE `receiptdetail`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

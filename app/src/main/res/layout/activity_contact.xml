@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ContactActivity">
+    tools:context=".activities.ContactActivity"
+    android:orientation="vertical"
+    android:background="@color/design_default_color_primary_variant"
+    android:gravity="center">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Contact Activity"/>
+        android:layout_height="wrap_content"
+        android:text="Email: 1612580@student.hcmus.edu.vn"
+        android:background="@drawable/border"
+        android:layout_marginBottom="10dp"
+        android:textAlignment="center"
+        android:textSize="25sp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gmail: ronin32014@gmail.com"
+        android:background="@drawable/border"
+        android:textAlignment="center"
+        android:textSize="25sp"/>
+
+</LinearLayout>

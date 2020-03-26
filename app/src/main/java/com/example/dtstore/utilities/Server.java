@@ -3,12 +3,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class Server {
-    public static String localhost = "192.168.1.62";
-    public static String CategoryUrl = "http://" + localhost + "/android/getCategories.php";
-    public static String LatestProductUrl = "http://" + localhost + "/android/getLatestProducts.php";
-    public static String ProductURL = "http://" + localhost + "/android/getProducts.php?page=";
-    public static String ReceiptURL = "http://" + localhost + "/android/getCustomerInfo.php";
-    public static String ReceiptDetailURL = "http://" + localhost + "/android/receiptDetail.php";
+    public static String localhost = "https://lductaistore.000webhostapp.com";
+    public static String CategoryUrl = localhost + "/getCategories.php";
+    public static String LatestProductUrl = localhost + "/getLatestProducts.php";
+    public static String ProductURL = localhost + "/getProducts.php?page=";
+    public static String ReceiptURL = localhost + "/getCustomerInfo.php";
+    public static String ReceiptDetailURL = localhost + "/receiptDetail.php";
 
     public static String getIPv4Address(){
         String ipv4 = "";
